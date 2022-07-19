@@ -11,7 +11,7 @@ class B {
 }
 ```
 
-https://try.haxe.org/#D45e4c1C
+https://try.haxe.org/#c3aBc327
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -29,6 +29,7 @@ class Macro {
 		for (field in fields) {
 			switch field.kind {
 				case FVar(TPath({name: n, sub: sub, pack: p})), FProp(_, _, TPath({name: n, sub: sub, pack: p})):
+          // Be careful TPath "module declaration" : name is module, sub is type !
 					if (sub != null) {
 						p.push(n);
 						p.push(sub);
@@ -40,7 +41,7 @@ class Macro {
 					switch t {
 						case TInst(_t, _):
 							var __t = _t.get();
-							var _fields = __t.fields.get();
+							var _fields = __t.fields.get(); // Here fields are empty because of cyclical redundancy
 							if (_fields.length == 0) {
 								delayed.push(rcl);
 							}
@@ -57,7 +58,7 @@ class Macro {
 				var rcl = null;
 				while ((rcl = delayed.pop()) != null) {
 					var cl = rcl.get();
-					cl.exclude();
+					cl.exclude(); // Exclude does'nt really exclude, but mark class as "extern"
 					var ncl = classToTypeDefinition(cl, cl.name + "_Delayed_" + it);
 					Context.defineType(ncl);
 				}
