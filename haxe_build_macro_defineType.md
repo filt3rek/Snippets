@@ -1,13 +1,13 @@
 Delaying a building macro in case of cyclical redundancy
 ```haxe
-//@:build(Macro.build())
+// @:build(Macro.build())			// without delaying
 @:build(Macro.build(true))
 @:keep
 class A {
 	var b:B;
 }
 
-//@:build(Macro.build())
+// @:build(Macro.build())			// without delaying
 @:build(Macro.build(true))
 @:keep
 class B {
@@ -24,7 +24,7 @@ class Test {
 }
 ```
 
-https://try.haxe.org/#36ac0161
+https://try.haxe.org/#0E341e64
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
