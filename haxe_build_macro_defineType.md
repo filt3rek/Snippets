@@ -36,8 +36,11 @@ class Macro {
 		var rcl = Context.getLocalClass();
 		trace("Building " + rcl);
 		var fields = Context.getBuildFields();
-		var a = [];
+		var finalFields = [];
+		var reports = [];
 		for (field in fields) {
+			if (field.name != "report")
+				finalFields.push(field);
 			switch field.kind {
 				case FVar(TPath({name: n, sub: sub, pack: p})), FProp(_, _, TPath({name: n, sub: sub, pack: p})):
 					// Be careful TPath "module declaration" : name is module, sub is type !
@@ -54,11 +57,14 @@ class Macro {
 						case TInst(_t, _):
 							var __t = _t.get();
 							var _fields = __t.fields.get(); // Here fields are empty because of cyclical redundancy
+              trace( field.name, __t.fields.get().map(o->o.name) );
+              trace( field.name, __t.statics.get().map(o->o.name) );
 							if (_fields.length == 0) {
 								delayed.push(rcl);
 							} else {
 								var s_fields = _fields.map(o -> o.name).join(",");
-								a.push(macro $v{s_fields});
+								trace(field.name, s_fields);
+								reports.push(macro $v{s_fields});
 							}
 							trace('Class : $rcl', 'Field : ${field.name}', 'Field type : ${_t.toString()}', 'Type\'s fields : ${_fields.map(o -> o.name)}');
 						case _:
@@ -68,8 +74,6 @@ class Macro {
 		}
 		if (!isATSet) {
 			Context.onAfterTyping(function(_) {
-				if (it > 10)
-					return;
 				trace("onAfterTyping pass " + it++);
 				var nts = [];
 				var rcl = null;
@@ -82,15 +86,14 @@ class Macro {
 			});
 			isATSet = true;
 		}
-		if (a.length > 0) {
-			fields.push({
-				name: "report",
-				access: [AStatic, APublic],
-				kind: FVar(macro:Array<String>, macro $a{a}),
-				pos: Context.currentPos()
-			});
-		}
-		return fields;
+		finalFields.push({
+			name: "report",
+			access: [AStatic, APublic],
+			kind: FVar(macro:Array<String>, macro $a{reports}),
+			pos: Context.currentPos()
+		});
+
+		return finalFields;
 	}
 
 	static function classToTypeDefinition(cl:ClassType, newName:String):TypeDefinition {
@@ -126,7 +129,7 @@ class Macro {
 		if (!cl.meta.has(":keep")) {
 			metas.push({name: ":keep", pos: Context.currentPos()});
 		}
-		// metas.push({name: ":native", params: [macro $v{cl.name}], pos: Context.currentPos()});
+		metas.push({name: ":native", params: [macro $v{cl.name}], pos: Context.currentPos()});
 		var o = {
 			pack: cl.pack,
 			name: newName,
@@ -138,7 +141,7 @@ class Macro {
 			kind: TDClass(scDef, interfaces, cl.isInterface),
 			fields: fields
 		}
-		// trace(o);
+		//trace(o.fields);
 		return o;
 	}
 
