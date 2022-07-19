@@ -24,7 +24,7 @@ class Test {
 }
 ```
 
-https://try.haxe.org/#0E341e64
+https://try.haxe.org/#6Ef7e66F
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -48,7 +48,7 @@ class Macro {
 			finalFields.push(field);
 			switch field.kind {
 				case FVar(TPath({name: n, sub: sub, pack: p})), FProp(_, _, TPath({name: n, sub: sub, pack: p})):
-					// Be careful TPath "module declaration" : name is module, sub is type !
+					// Be careful TPath "module declaration" : name is module, sub is type (if sub is not empty) !
 					var path = p.copy();
 					if (sub != null) {
 						path.push(n);
