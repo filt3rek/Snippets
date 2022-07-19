@@ -14,7 +14,7 @@ class B {
 
 class Test {
 	static function main() {
-		//trace(A.report);
+		trace(A.report);
 		trace(B.report);
 	}
 }
