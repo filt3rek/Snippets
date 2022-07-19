@@ -1,12 +1,14 @@
 Delaying a building macro in case of cyclical redundancy
 ```haxe
-@:build(Macro.build())
+//@:build(Macro.build())
+@:build(Macro.build(true))
 @:keep
 class A {
 	var b:B;
 }
 
-@:build(Macro.build())
+//@:build(Macro.build())
+@:build(Macro.build(true))
 @:keep
 class B {
 	var a:A;
@@ -14,14 +16,15 @@ class B {
 
 class Test {
 	static function main() {
+		// "report" static vars are just here to show that it's working fine :
+		// While without delaying, A.report is empty, with it's filled
 		trace(A.report);
 		trace(B.report);
 	}
 }
-
 ```
 
-https://try.haxe.org/#0ef74Fe0
+https://try.haxe.org/#36ac0161
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -32,7 +35,7 @@ class Macro {
 	static var isATSet = false;
 	static var it = 0;
 
-	static function build() {
+	static function build(delaying = false) {
 		var rcl = Context.getLocalClass();
 		trace("Building " + rcl);
 		var fields = Context.getBuildFields();
@@ -72,17 +75,19 @@ class Macro {
 			}
 		}
 		if (!isATSet) {
-			Context.onAfterTyping(function(_) {
-				trace("onAfterTyping pass " + it++);
-				var nts = [];
-				var rcl = null;
-				while ((rcl = delayed.pop()) != null) {
-					var cl = rcl.get();
-					cl.exclude(); // Exclude does'nt really exclude, but mark class as "extern"
-					var ncl = classToTypeDefinition(cl, cl.name + "_Delayed_" + it);
-					Context.defineType(ncl);
-				}
-			});
+			if (delaying) {
+				Context.onAfterTyping(function(_) {
+					trace("onAfterTyping pass " + it++);
+					var nts = [];
+					var rcl = null;
+					while ((rcl = delayed.pop()) != null) {
+						var cl = rcl.get();
+						cl.exclude(); // Exclude does'nt really exclude, but mark class as "extern"
+						var ncl = classToTypeDefinition(cl, cl.name + "_Delayed_" + it);
+						Context.defineType(ncl);
+					}
+				});
+			}
 			isATSet = true;
 		}
 		finalFields.push({
