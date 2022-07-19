@@ -1,4 +1,4 @@
-Delaying a building macro in case of cyclical redundancy
+Delaying a building macro in case of cyclical redundancy : https://try.haxe.org/#6Ef7e66F
 ```haxe
 // @:build(Macro.build())			// without delaying
 @:build(Macro.build(true))
@@ -24,7 +24,6 @@ class Test {
 }
 ```
 
-https://try.haxe.org/#6Ef7e66F
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
