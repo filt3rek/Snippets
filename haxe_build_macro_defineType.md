@@ -1,4 +1,4 @@
-Delaying a building macro in case of cyclical redundancy : https://try.haxe.org/#6Ef7e66F
+Delaying a building macro in case of cyclical redundancy : https://try.haxe.org/#90034443
 ```haxe
 // @:build(Macro.build())			// without delaying
 @:build(Macro.build(true))
@@ -77,7 +77,6 @@ class Macro {
 			if (delaying) {
 				Context.onAfterTyping(function(_) {
 					trace("onAfterTyping pass " + it++);
-					var nts = [];
 					var rcl = null;
 					while ((rcl = delayed.pop()) != null) {
 						var cl = rcl.get();
