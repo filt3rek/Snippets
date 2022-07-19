@@ -21,7 +21,7 @@ class Test {
 
 ```
 
-https://try.haxe.org/#7cA497E0
+https://try.haxe.org/#0ef74Fe0
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -39,8 +39,10 @@ class Macro {
 		var finalFields = [];
 		var reports = [];
 		for (field in fields) {
-			if (field.name != "report")
-				finalFields.push(field);
+			if (field.name == "report") {
+				continue;
+			}
+			finalFields.push(field);
 			switch field.kind {
 				case FVar(TPath({name: n, sub: sub, pack: p})), FProp(_, _, TPath({name: n, sub: sub, pack: p})):
 					// Be careful TPath "module declaration" : name is module, sub is type !
@@ -57,13 +59,10 @@ class Macro {
 						case TInst(_t, _):
 							var __t = _t.get();
 							var _fields = __t.fields.get(); // Here fields are empty because of cyclical redundancy
-              trace( field.name, __t.fields.get().map(o->o.name) );
-              trace( field.name, __t.statics.get().map(o->o.name) );
 							if (_fields.length == 0) {
 								delayed.push(rcl);
 							} else {
 								var s_fields = _fields.map(o -> o.name).join(",");
-								trace(field.name, s_fields);
 								reports.push(macro $v{s_fields});
 							}
 							trace('Class : $rcl', 'Field : ${field.name}', 'Field type : ${_t.toString()}', 'Type\'s fields : ${_fields.map(o -> o.name)}');
@@ -141,7 +140,7 @@ class Macro {
 			kind: TDClass(scDef, interfaces, cl.isInterface),
 			fields: fields
 		}
-		//trace(o.fields);
+		// trace(o.fields);
 		return o;
 	}
 
