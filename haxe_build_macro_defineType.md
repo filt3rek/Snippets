@@ -1,17 +1,27 @@
 Delaying a building macro in case of cyclical redundancy
 ```haxe
 @:build(Macro.build())
+@:keep
 class A {
 	var b:B;
 }
 
 @:build(Macro.build())
+@:keep
 class B {
 	var a:A;
 }
+
+class Test {
+	static function main() {
+		//trace(A.report);
+		trace(B.report);
+	}
+}
+
 ```
 
-https://try.haxe.org/#c3aBc327
+https://try.haxe.org/#7cA497E0
 ```haxe
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -26,24 +36,29 @@ class Macro {
 		var rcl = Context.getLocalClass();
 		trace("Building " + rcl);
 		var fields = Context.getBuildFields();
+		var a = [];
 		for (field in fields) {
 			switch field.kind {
 				case FVar(TPath({name: n, sub: sub, pack: p})), FProp(_, _, TPath({name: n, sub: sub, pack: p})):
-          // Be careful TPath "module declaration" : name is module, sub is type !
+					// Be careful TPath "module declaration" : name is module, sub is type !
+					var path = p.copy();
 					if (sub != null) {
-						p.push(n);
-						p.push(sub);
+						path.push(n);
+						path.push(sub);
 					} else {
-						p.push(n);
+						path.push(n);
 					}
 
-					var t = Context.getType(p.join("."));
+					var t = Context.getType(path.join("."));
 					switch t {
 						case TInst(_t, _):
 							var __t = _t.get();
 							var _fields = __t.fields.get(); // Here fields are empty because of cyclical redundancy
 							if (_fields.length == 0) {
 								delayed.push(rcl);
+							} else {
+								var s_fields = _fields.map(o -> o.name).join(",");
+								a.push(macro $v{s_fields});
 							}
 							trace('Class : $rcl', 'Field : ${field.name}', 'Field type : ${_t.toString()}', 'Type\'s fields : ${_fields.map(o -> o.name)}');
 						case _:
@@ -53,6 +68,8 @@ class Macro {
 		}
 		if (!isATSet) {
 			Context.onAfterTyping(function(_) {
+				if (it > 10)
+					return;
 				trace("onAfterTyping pass " + it++);
 				var nts = [];
 				var rcl = null;
@@ -65,7 +82,15 @@ class Macro {
 			});
 			isATSet = true;
 		}
-		return null;
+		if (a.length > 0) {
+			fields.push({
+				name: "report",
+				access: [AStatic, APublic],
+				kind: FVar(macro:Array<String>, macro $a{a}),
+				pos: Context.currentPos()
+			});
+		}
+		return fields;
 	}
 
 	static function classToTypeDefinition(cl:ClassType, newName:String):TypeDefinition {
@@ -98,7 +123,10 @@ class Macro {
 			fields.push(classFieldToField(field, true));
 		}
 		var metas = cl.meta.get();
-		// metas.push({name: "@:keep", pos: Context.currentPos()});
+		if (!cl.meta.has(":keep")) {
+			metas.push({name: ":keep", pos: Context.currentPos()});
+		}
+		// metas.push({name: ":native", params: [macro $v{cl.name}], pos: Context.currentPos()});
 		var o = {
 			pack: cl.pack,
 			name: newName,
@@ -123,5 +151,4 @@ class Macro {
 		return field;
 	}
 }
-
 ```
