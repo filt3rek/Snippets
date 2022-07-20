@@ -1,3 +1,8 @@
+Documentation to see :
+- https://haxe.org/manual/macro.html
+- https://haxe.org/manual/macro-type-building.html
+- https://haxe.org/manual/macro-limitations-build-order.html
+
 This sample shows how build types order works and can be upset using build macro https://try.haxe.org/#DD6AA298
 
 ```haxe
