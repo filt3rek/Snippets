@@ -15,6 +15,9 @@ class B {}
 @:build(Macro.build())
 class C {
 	var a:A;
+  public function foo(){
+		Macro.getExpr();
+  }
 }
 
 class Test {
@@ -29,6 +32,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr;
 
 class Macro {
+#if macro
 	static function build() {
 		var t = Context.getLocalType();
 		trace('Building : $t');
@@ -37,7 +41,7 @@ class Macro {
 		switch t2 {
 			case TInst(rt3, _):
 				trace(rt3);
-				//var t3 = rt3.get();           // (1) Will change build order
+				//var t3 = rt3.get();		// (1) Will change build order
 			case _:
 		}
 		var fields = Context.getBuildFields();
@@ -46,11 +50,11 @@ class Macro {
 				switch field.kind {
 					case FVar(p):
 						var t2 = Context.resolveType(p, field.pos);
-						//var t2 = haxe.macro.ComplexTypeTools.toType(p);
+						// var t2 = haxe.macro.ComplexTypeTools.toType(p);
 						switch t2 {
 							case TInst(rt3, _):
 								trace(rt3);
-							  //var t3 = rt3.get();   // (2) Will change build order
+							// var t3 = rt3.get();		// (2) Will change build order
 							case _:
 						}
 					case _:
@@ -59,14 +63,19 @@ class Macro {
 		}
 		return fields;
 	}
+#end
+  
+  macro public static function getExpr(){
+    trace( "getExpr() macro call" );
+    //var t	= Context.getType("A");		// (3) Will NOT change build order
+		return macro null;
+  }
 }
-
 ```
 **Notes :**
 1. The basic order here is C, B, A, but everytime you will access another type (using `.get()`), it will change the order.
 Here, if we uncomment (1) or (2), the order will be C, A, B
-2. The build order isn't changed when (1) and (2) are commented even if C has a field of type A, I suppose the build macro doesn't type the fields
-automatically as I understand here :
+2. The build order isn't changed when (1) and (2) are commented even if C has a field of type A and even if (3) is uncommented, I suppose the build macro doesn't type the fields at this moment automatically as I understand here :
 > Build Macros: These are defined for classes, enums and abstracts through the @:build or @:autoBuild metadata. They are executed per type, after the type has been set up (including its relation to other types, such as inheritance for classes) but before its fields are typed (see Type Building).
 
 **Pending questions :**
