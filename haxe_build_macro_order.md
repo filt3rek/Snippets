@@ -19,7 +19,7 @@ class Test {
 }
 ```
 The basic order here is C, B, A, but everytime you will access another type (using `.get()`), it will change the order.
-Here, if we uncomment #L37 or #L50, the order will be C, A, B
+Here, if we uncomment (1) or (2), the order will be C, A, B
 
 ```haxe
 import haxe.macro.Context;
@@ -34,7 +34,7 @@ class Macro {
 		switch t2 {
 			case TInst(rt3, _):
 				trace(rt3);
-				//var t3 = rt3.get();           // Will change build order
+				//var t3 = rt3.get();           // (1) Will change build order
 			case _:
 		}
 		var fields = Context.getBuildFields();
@@ -47,7 +47,7 @@ class Macro {
 						switch t2 {
 							case TInst(rt3, _):
 								trace(rt3);
-							  //var t3 = rt3.get();   // Will change build order
+							  //var t3 = rt3.get();   // (2) Will change build order
 							case _:
 						}
 					case _:
