@@ -18,8 +18,6 @@ class Test {
 	}
 }
 ```
-The basic order here is C, B, A, but everytime you will access another type (using `.get()`), it will change the order.
-Here, if we uncomment (1) or (2), the order will be C, A, B
 
 ```haxe
 import haxe.macro.Context;
@@ -59,3 +57,12 @@ class Macro {
 }
 
 ```
+**Notes :**
+1. The basic order here is C, B, A, but everytime you will access another type (using `.get()`), it will change the order.
+Here, if we uncomment (1) or (2), the order will be C, A, B
+2. The build order isn't changed when (1) and (2) are commented even if C has a field of type A, I suppose the build macro doesn't type the fields
+automatically as I understand here :
+> Build Macros: These are defined for classes, enums and abstracts through the @:build or @:autoBuild metadata. They are executed per type, after the type has been set up (including its relation to other types, such as inheritance for classes) but before its fields are typed (see Type Building).
+
+**Pending questions :**
+1. I don't really know the difference between `haxe.macro.ComplexTypeTools.toType(p)` and `Context.resolveType(p, field.pos)`
