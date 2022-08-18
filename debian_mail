@@ -1,0 +1,1 @@
+mail -aFrom:'The Name<myname@domain.com>' -s "My Subject" myrecipient@domain.com
