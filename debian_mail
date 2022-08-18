@@ -1,1 +1,2 @@
 mail -aFrom:'The Name<myname@domain.com>' -s "My Subject" myrecipient@domain.com
+CTRL+D to send
