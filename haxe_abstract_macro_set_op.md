@@ -1,4 +1,4 @@
-Here is how we can get a kind of partial typedef with dynamic properties even parametrized : https://try.haxe.org/#050dF777
+Here is how we can get a kind of partial typedef with dynamic properties even parametrized : [https://try.haxe.org/#050dF777](https://try.haxe.org/#050dF777)
 
 ```haxe
 import haxe.macro.Expr;
@@ -6,11 +6,12 @@ import haxe.macro.Context;
 
 using haxe.macro.Tools;
 
-abstract ADyn<T>(Dyn<T>) from Dyn<T> to Dyn<T> {
+abstract ADyn<T>(T) from T to T {
 	@:op(A.B) function get(prop:String) {
 		if (Reflect.hasField(this, prop))
 			return Reflect.field(this, prop);
-		return Reflect.field(@:privateAccess this._data_, prop);
+		var data = Reflect.field(this, "_data_");
+		return Reflect.field(data, prop);
 	}
 
 	@:op(A.B) macro function set(obj:haxe.macro.Expr, prop:haxe.macro.Expr, val:haxe.macro.Expr) {
@@ -61,16 +62,15 @@ class Dyn<T> {
 
 class Test {
 	static function main() {
-		var mydynobj:ADyn<Dynamic> = {foo: 1}
+		var mydynobj:ADyn<Dyn<Dynamic>> = {foo: 1}
 		mydynobj.bar = "barry";
 		mydynobj.foo = 3;
 		trace(mydynobj.foo, mydynobj.bar);
-    
-    var mydynobj2:ADyn<Float> = {foo: 1}
-		//mydynobj2.bar = "barry"; // Float expected
-		//mydynobj2.foo = "barry"; // Int expected
+
+		var mydynobj2:ADyn<Dyn<Float>> = {foo: 1}
+		// mydynobj2.bar = "barry"; // Float expected
+		// mydynobj2.foo = "barry"; // Int expected
 		trace(mydynobj2.foo, mydynobj2.bar);
 	}
 }
-
 ```
