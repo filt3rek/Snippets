@@ -74,3 +74,5 @@ class Test {
 	}
 }
 ```
+
+WIP : https://try.haxe.org/#8d0B9a82 (get error trying to access an undefined yet prop)
