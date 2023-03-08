@@ -1,4 +1,4 @@
-`ts=$(date +%s);echo "function main(){Sys.print('$ts');sys.FileSystem.deleteFile('Main_$ts.hx');}" > Main_$ts.hx | haxe --run Main_$ts`
+`ts=$(date +%s);echo "function main(){Sys.print('$ts');}" > Main_$ts.hx;haxe --run Main_$ts;rm Main_$ts.hx`
 
 OR : 
 "hs.sh" file :
