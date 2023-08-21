@@ -13,6 +13,10 @@ import haxe.macro.Type;
 import haxe.macro.Expr;
 
 class Macro {
+	public static function build() {
+		trace(Context.getLocalClass());
+		return null;
+	}
 	public static function init() {
 		Context.onAfterTyping(function(a) {
 			// This is your extra field that is populated while building types
@@ -33,6 +37,7 @@ class Macro {
 								pack: [],
 								name: "A_", // You have to give a dummy name if not Haxe will complain that "A" already exists (even if it's mark as excluded from compilation...)
 								meta: [{name: ':native', params: [macro "A"], pos: pos}, {name: ':keep', pos: pos},],
+								// Or meta: [{name: ':build', params: [macro Macro.build()], pos: pos}, {name: ':native', params: [macro "A"], pos: pos}, {name: ':keep', pos: pos},],
 								fields: [
 									for (field in cl.fields.get())
 										classFieldToField(field, true, true)
