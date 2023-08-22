@@ -1,6 +1,7 @@
 It overrides a base class after typing is done.
 So basically it delays a `@:build` macro process after all is typed
 
+```haxe
 public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 	haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectClassFields() )" );
 	Context.onAfterTyping(function( a ) {
@@ -41,3 +42,4 @@ public static function collectClassFields() {
 	collectedClassFields.set( Context.getLocalClass().toString(), Context.getBuildFields() );
 	return null;
 }
+```
