@@ -12,8 +12,7 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 						var cl = rcl.get();
 						cl.exclude();
 
-						var supercl		= cl.superClass;
-						var interfaces	= cl.interfaces;
+						var supercl	= cl.superClass;
 
 						var pos 	= Context.currentPos();
 						var newT 	= {
@@ -25,8 +24,8 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 								{ name: ':keep', pos: pos },
 							],
 							fields	: collectedClassFields.get( cls ),
-							kind	: TDClass(@:privateAccess haxe.macro.TypeTools.toTypePath( supercl.t.get(), supercl.params ), interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract),
-							pos		: cl.pos
+							kind	: TDClass(@:privateAccess haxe.macro.TypeTools.toTypePath( supercl.t.get(), supercl.params ), cl.interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract),
+							pos	: cl.pos
 						}
 						Context.defineType( newT, cl.module );
 					}
