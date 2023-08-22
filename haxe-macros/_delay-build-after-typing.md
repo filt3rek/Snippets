@@ -3,7 +3,7 @@ So basically it delays a `@:build` macro process after all is typed
 
 ```haxe
 public static function delayBuildAfterTyping( cls : String, build : Expr ) {
-	haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectClassFields() )" );
+	haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectFields() )" );
 	Context.onAfterTyping(function( a ) {
 		for ( t in a ) {
 			switch t {
@@ -37,8 +37,8 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 	return null;
 }
 
-static var collectedClassFields : Map<String, Array<Field>> = [];
-public static function collectClassFields() {
+static var collectedFields : Map<String, Array<Field>> = [];
+public static function collectFields() {
 	collectedClassFields.set( Context.getLocalClass().toString(), Context.getBuildFields() );
 	return null;
 }
