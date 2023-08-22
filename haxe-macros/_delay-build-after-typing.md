@@ -18,11 +18,11 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 						var newT 	= {
 							pack	: cl.pack,
 							name	: cls +	Std.random( 1000 ), // You have to give a dummy name if not Haxe will complain that "A" already exists (even if it's mark as excluded from compilation...)
-							meta	: [
+							meta	: cl.meta.get().concat( [
 								{ name: ':native', params: [ macro $v{cls} ], pos: pos },
 								{ name: ':build', params: [macro $build()], pos: pos },
 								{ name: ':keep', pos: pos },
-							],
+							] ),
 							fields	: collectedClassFields.get( cls ),
 							kind	: TDClass(@:privateAccess haxe.macro.TypeTools.toTypePath( supercl.t.get(), supercl.params ), cl.interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract),
 							pos	: cl.pos
