@@ -8,7 +8,7 @@ public static function delayBuildAfterTyping( ?cls : String, build : Expr ) {
 		cls = Context.getLocalClass().toString();
 		collectFields();
 	}else{
-		haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectFields() )" );
+		haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( collectFields() )" );
 	}
 	Context.onAfterTyping(function( a ) {
 		for ( t in a ) {
