@@ -21,7 +21,7 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 								{ name: ':build', params: [macro $build()], pos: pos },
 								{ name: ':keep', pos: pos },
 							] ),
-							fields	: collectedClassFields.get( cls ),
+							fields	: collectedFields.get( cls ),
 							kind	: {
 								var superClassTP	= cl.superClass != null ? @:privateAccess haxe.macro.TypeTools.toTypePath( cl.superClass.t.get(), cl.superClass.params ) : null;
 								TDClass(superClassTP, cl.interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract);
@@ -39,7 +39,7 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 
 static var collectedFields : Map<String, Array<Field>> = [];
 public static function collectFields() {
-	collectedClassFields.set( Context.getLocalClass().toString(), Context.getBuildFields() );
+	collectedFields.set( Context.getLocalClass().toString(), Context.getBuildFields() );
 	return null;
 }
 ```
