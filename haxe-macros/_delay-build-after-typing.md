@@ -2,13 +2,14 @@ It overrides a base class after typing is done.
 So basically it delays a `@:build` macro process after all is typed
 Usable from init macro or build macro
 
+__Macro.hx :__
 ```haxe
-public static function delayBuildAfterTyping( ?cls : String, build : Expr ) {
+public static function delayBuildAfterTyping( build : String, ?cls : String ) {
 	if( cls == null ){
 		cls = Context.getLocalClass().toString();
 		collectFields();
 	}else{
-		haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( collectFields() )" );
+		haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( Macro.collectFields() )" );
 	}
 	Context.onAfterTyping(function( a ) {
 		for ( t in a ) {
@@ -24,7 +25,7 @@ public static function delayBuildAfterTyping( ?cls : String, build : Expr ) {
 							name	: cls +	Std.random( 1000 ), // You have to give a dummy name if not Haxe will complain that "A" already exists (even if it's mark as excluded from compilation...)
 							meta	: cl.meta.get().concat( [
 								{ name: ':native', params: [ macro $v{cls} ], pos: pos },
-								{ name: ':build', params: [macro $build()], pos: pos },
+								{ name: ':build', params: [macro $p{ build.split( "." ) }()], pos: pos },
 								{ name: ':keep', pos: pos },
 							] ),
 							fields	: collectedFields.get( cls ),
