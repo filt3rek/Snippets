@@ -1,9 +1,15 @@
 It overrides a base class after typing is done.
 So basically it delays a `@:build` macro process after all is typed
+Usable from init macro or build macro
 
 ```haxe
-public static function delayBuildAfterTyping( cls : String, build : Expr ) {
-	haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectFields() )" );
+public static function delayBuildAfterTyping( ?cls : String, build : Expr ) {
+	if( cls == null ){
+		cls = Context.getLocalClass().toString();
+		collectFields();
+	}else{
+		haxe.macro.Compiler.addGlobalMetadata( cls, "@:build( ftk.macro.Compiler.collectFields() )" );
+	}
 	Context.onAfterTyping(function( a ) {
 		for ( t in a ) {
 			switch t {
@@ -26,7 +32,7 @@ public static function delayBuildAfterTyping( cls : String, build : Expr ) {
 								var superClassTP	= cl.superClass != null ? @:privateAccess haxe.macro.TypeTools.toTypePath( cl.superClass.t.get(), cl.superClass.params ) : null;
 								TDClass(superClassTP, cl.interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract);
 							},
-							pos	: cl.pos
+							pos		: pos
 						}
 						Context.defineType( newT, cl.module );
 					}
