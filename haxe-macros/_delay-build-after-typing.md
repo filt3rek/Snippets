@@ -35,6 +35,7 @@ public static function delayBuildAfterTyping( ?cls : String, build : Expr ) {
 							pos		: pos
 						}
 						Context.defineType( newT, cl.module );
+						break;
 					}
 				case _:
 			}
