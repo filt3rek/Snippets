@@ -1,6 +1,7 @@
 It overrides a base class after typing is done.
 So basically it delays a `@:build` macro process after all is typed
-Usable from init macro or build macro
+
+_Usable from init macro or build macro_
 
 __Macro.hx :__
 ```haxe
