@@ -5,7 +5,7 @@ _Usable from init macro or build macro_
 
 __Macro.hx :__
 ```haxe
-public static function delayBuildAfterTyping( build : String, ?cls : String ) {
+public static function delayBuildAfterTyping( ?build : String, ?cls : String ) {
 	if( cls == null ){
 		cls = Context.getLocalClass().toString();
 		collectFields();
@@ -23,10 +23,9 @@ public static function delayBuildAfterTyping( build : String, ?cls : String ) {
 						var pos 	= Context.currentPos();
 						var newT 	= {
 							pack	: cl.pack,
-							name	: cls +	Std.random( 1000 ), // You have to give a dummy name if not Haxe will complain that "A" already exists (even if it's mark as excluded from compilation...)
+							name	: cls + "_delayed_" + Std.random( 1000 ), // You have to give a dummy name if not Haxe will complain that "A" already exists (even if it's mark as excluded from compilation...)
 							meta	: cl.meta.get().concat( [
 								{ name: ':native', params: [ macro $v{cls} ], pos: pos },
-								{ name: ':build', params: [macro $p{ build.split( "." ) }()], pos: pos },
 								{ name: ':keep', pos: pos },
 							] ),
 							fields	: collectedFields.get( cls ),
@@ -35,6 +34,9 @@ public static function delayBuildAfterTyping( build : String, ?cls : String ) {
 								TDClass(superClassTP, cl.interfaces.map(i->@:privateAccess haxe.macro.TypeTools.toTypePath( i.t.get(), i.params ) ), cl.isInterface, cl.isFinal, cl.isAbstract);
 							},
 							pos		: pos
+						}
+						if( build != null ){
+							newT.meta.push( { name: ':build', params: [macro $p{ build.split( "." ) }()], pos: pos }, );
 						}
 						Context.defineType( newT, cl.module );
 						break;
