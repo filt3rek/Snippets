@@ -1,4 +1,5 @@
 https://try.haxe.org/#feF925fc
+
 ```haxe
 class Test {
 	static function main() {
