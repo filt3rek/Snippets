@@ -38,7 +38,8 @@ public static function delayBuildAfterTyping( ?build : String, ?cls : String ) {
 						if( build != null ){
 							newT.meta.push( { name: ':build', params: [macro $p{ build.split( "." ) }()], pos: pos }, );
 						}
-						Context.defineType( newT, cl.module );
+						//Context.defineType( newT, cl.module );
+						Context.defineModule(cl.module, [newT]); // https://github.com/HaxeFoundation/haxe/issues/11297#issuecomment-2194313016
 						break;
 					}
 				case _:
